@@ -78,10 +78,18 @@
   	<servlet-name>cancelcarServ</servlet-name>
   	<servlet-class>cn.edu.uzz.servlet.CancelCarServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>rentoneServ</servlet-name>
+  	<servlet-class>cn.edu.uzz.servlet.RentOneServlet</servlet-class>
+  </servlet>
   
   
   
   
+  <servlet-mapping>
+  	<servlet-name>rentoneServ</servlet-name>
+  	<url-pattern>/rentoneServ</url-pattern>
+  	</servlet-mapping>
   <servlet-mapping>
   	<servlet-name>cancelcarServ</servlet-name>
   	<url-pattern>/cancelcarServ</url-pattern>

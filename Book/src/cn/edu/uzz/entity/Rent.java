@@ -6,23 +6,23 @@ public class Rent {
 	private String account;
 	private String bookname;
 	private String nowdate;
-	private String willtime;
+	private String enddate;
+	private String picture;
+	private int bookid;
+	private int booktype;
 	public String getNowdate() {
 		return nowdate;
 	}
 	public void setNowdate(String nowdate) {
 		this.nowdate = nowdate;
 	}
-	public String getWilltime() {
-		return willtime;
-	}
-	public void setWilltime(String willtime) {
-		this.willtime = willtime;
-	}
-	private String picture;
-	private int bookid;
-	private int booktype;
 	
+	public String getEnddate() {
+		return enddate;
+	}
+	public void setEnddate(String enddate) {
+		this.enddate = enddate;
+	}
 	public int getBookid() {
 		return bookid;
 	}

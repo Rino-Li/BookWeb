@@ -49,14 +49,14 @@ public class LoginServlet extends HttpServlet{
 		rs = statement.executeQuery(sql1);
 		
 		JSONObject data = new JSONObject();
-		// 查询到数据
-		if (!rs.next()) {
+		
+		if (!rs.next()) {//没有查询到 数据
 			data.put("resultCode", 2);
 			data.put("errorMsg", "");
 			resp.getWriter().write(data.toString());
 			return;
 			
-		} else {
+		} else {// 查询到数据
 			String pwd = rs.getString("password");
 			if (pwd.equals(usrPwd)) {
 				

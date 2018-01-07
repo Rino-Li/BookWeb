@@ -16,6 +16,9 @@ import cn.edu.uzz.entity.Subscribe;
 import cn.edu.uzz.util.DBHelper;
 
 public class BooksDao {
+	
+	String status;
+	
 	// 获得所有的图书信息
 		public static ArrayList<Books> getAllBooks(int type1) {
 			String tablename = null;
@@ -530,7 +533,7 @@ public class BooksDao {
 						rent.setBookname(rs.getString("bookname"));
 						rent.setPicture(rs.getString("picture"));
 						rent.setNowdate(rs.getString("nowdate"));
-						rent.setWilltime(rs.getString("enddate"));
+						rent.setEnddate(rs.getString("enddate"));
 						list.add(rent);// 把一个商品加入集合
 					}
 					return list; // 返回集合。
@@ -564,7 +567,6 @@ public class BooksDao {
 				
 				try {
 					String sql = "select * FROM rentcar a WHERE a.account = '"+account+"' and a.booktype='"+type+"' and a.bookid='"+id+"'";
-
 					Connection conn = DBHelper.getConnection();
 					Statement statement;
 					statement = conn.createStatement();
@@ -581,4 +583,134 @@ public class BooksDao {
 					return 2;//出问题
 				}
 			}
+	
+	//借一本书的方法1.先检查书的 状态  2.进行增删改查
+	public int rentone(int booktype,int bookid){
+		String tablename = null;
+		switch (booktype) {
+		case 0:
+			tablename="book0";
+			break;
+		case 1:
+			tablename="book1";
+			break;
+		case 2:
+			tablename="book2";
+			break;
+		case 3:
+			tablename="book3";
+			break;
+		case 4:
+			tablename="book4";
+			break;
+		case 5:
+			tablename="book5";
+			break;
+		case 6:
+			tablename="book6";
+			break;
+		case 7:
+			tablename="book7";
+			break;
+		case 8:
+			tablename="book8";
+			break;
+		case 9:
+			tablename="book9";
+			break;
+		case 10:
+			tablename="book10";
+			break;
+		default:
+			break;
+		}
+		String sql = "select rentstatus from "+tablename+" where id='"+bookid+"';";
+		Connection conn;
+		PreparedStatement statement;
+		Rent rent=new Rent();
+		try {
+			conn = DBHelper.getConnection();
+			statement = conn.prepareStatement(sql);
+			ResultSet rs = statement.executeQuery(sql);
+			if(rs.next()){
+				status=rs.getString(1);
+			}
+			if (status.equals("已借阅")) {
+				return 0;
+			}else{
+				System.out.println("这本书没有被借阅");
+				String sql2="select * from rentcar where bookid='"+bookid+"' and booktype='"+booktype+"' ;";
+				statement = conn.prepareStatement(sql2);
+				rs=statement.executeQuery(sql2);
+				if(!rs.next()){
+					System.out.println("这本书被用户取消借阅了");
+					return 3;
+				}else{
+					System.out.println("yunxing");
+					rent.setAccount(rs.getString("account"));
+					rent.setBookname(rs.getString("bookname"));
+					rent.setBooktype(rs.getInt("booktype"));
+					rent.setBookid(rs.getInt("bookid"));
+					rent.setEnddate(rs.getString("enddate"));
+					rent.setPicture(rs.getString("picture"));
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(rent.getPicture());
+		return startrentone(rent);
+	}
+	public int startrentone(Rent rent){
+		System.out.println(rent.getPicture()+"   picture的名字");
+		String sql = "insert into rentbook (bookname,account,enddate,nowdate,booktype,bookid,picture) values(?,?,?,(now()),?,?,?)";
+		Connection conn;
+		PreparedStatement statement;
+		try {
+			conn = DBHelper.getConnection();
+			statement = conn.prepareStatement(sql);
+			statement.setString(1, rent.getBookname());
+			statement.setString(2, rent.getAccount());
+			statement.setString(3, rent.getEnddate());
+			statement.setInt(4, rent.getBooktype());
+			statement.setInt(5, rent.getBookid());
+			statement.setString(6, rent.getPicture());
+			int rs = statement.executeUpdate();
+			System.out.println("rs的值是："+rs);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 1;
+		}
+		return deletecar(rent);
+	}
+	public int deletecar(Rent rent){
+		String sql = "delete from rentcar where bookid="+rent.getBookid()+" and booktype="+rent.getBooktype();
+		String sql2="select * from rentcar where bookid="+rent.getBookid()+" and booktype="+rent.getBooktype();
+		Connection conn;
+		PreparedStatement statement;
+		try {
+			conn = DBHelper.getConnection();
+			statement=conn.prepareStatement(sql2);
+			ResultSet rs = statement.executeQuery(sql2);
+			if(!rs.next()){
+				return 3;
+				//在这里有一个问题，就是在插入数据前后对借阅车的检索，在插入数据之前，如果用户删除了借阅车，那么提示用户取消订单
+				//插入数据之后如果用户删除了借阅车，那么需要回滚操作，修改图书状态，删除之前插入的数据
+				//这些争论的地方可有可无，但我觉着最终还是要加上
+			}
+			statement = conn.prepareStatement(sql);
+			int rs2 = statement.executeUpdate(sql);	
+			CallableStatement cs=conn.prepareCall("{call rentchange(?,?)}");
+			cs.setInt(1, rent.getBookid());
+			cs.setInt(2, rent.getBooktype());
+			cs.execute();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 2;
+		}
+		return 4;
+	}
 }
