@@ -17,7 +17,8 @@ import cn.edu.uzz.util.DBHelper;
 
 public class BooksDao {
 	
-	String status;
+	private String status;
+	private int error=0;
 	
 	// 获得所有的图书信息
 		public static ArrayList<Books> getAllBooks(int type1) {
@@ -176,7 +177,7 @@ public class BooksDao {
 					cs.setInt(2, type);
 					cs.execute();
 					return 1;//删除成功
-				}else{
+				}else{	
 					return 3;//没有收藏记录
 				}
 				
@@ -681,6 +682,7 @@ public class BooksDao {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			error++;
 			return 1;
 		}
 		return deletecar(rent);
@@ -709,8 +711,13 @@ public class BooksDao {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			error++;
 			return 2;
 		}
 		return 4;
+	}
+	
+	public int geterror(){
+		return error;
 	}
 }
