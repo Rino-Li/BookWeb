@@ -82,10 +82,18 @@
   	<servlet-name>rentoneServ</servlet-name>
   	<servlet-class>cn.edu.uzz.servlet.RentOneServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>searchServ</servlet-name>
+  	<servlet-class>cn.edu.uzz.servlet.SearchServlet</servlet-class>
+  </servlet>
   
   
   
   
+  <servlet-mapping>
+  	<servlet-name>searchServ</servlet-name>
+  	<url-pattern>/searchServ</url-pattern>
+  	</servlet-mapping>
   <servlet-mapping>
   	<servlet-name>rentoneServ</servlet-name>
   	<url-pattern>/rentoneServ</url-pattern>

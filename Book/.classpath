@@ -29,5 +29,6 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jfinal-1.9-bin.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/json-lib-2.4-jdk15.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/mysql-connector-java-5.1.30-bin.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/json.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

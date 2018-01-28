@@ -18,7 +18,6 @@ import cn.edu.uzz.util.DBHelper;
 public class BooksDao {
 	
 	private String status;
-	private int error=0;
 	
 	// 获得所有的图书信息
 		public static ArrayList<Books> getAllBooks(int type1) {
@@ -65,7 +64,7 @@ public class BooksDao {
 			PreparedStatement stmt = null;
 			ResultSet rs = null;
 			ArrayList<Books> list = new ArrayList<Books>(); // 商品集合
-			
+			TestDB testDB=new TestDB();
 			try {
 				conn = DBHelper.getConnection();
 				String sql = "select * from "+tablename+";"; // SQL语句
@@ -625,7 +624,7 @@ public class BooksDao {
 		default:
 			break;
 		}
-		String sql = "select rentstatus from "+tablename+" where id='"+bookid+"';";
+		String sql = "select rentstatus from "+tablename+" where id="+bookid+";";
 		Connection conn;
 		PreparedStatement statement;
 		Rent rent=new Rent();
@@ -635,11 +634,13 @@ public class BooksDao {
 			ResultSet rs = statement.executeQuery(sql);
 			if(rs.next()){
 				status=rs.getString(1);
+			}else{
+				System.out.println("diyigefangfa");
+				return 3;
 			}
 			if (status.equals("已借阅")) {
 				return 0;
 			}else{
-				System.out.println("这本书没有被借阅");
 				String sql2="select * from rentcar where bookid='"+bookid+"' and booktype='"+booktype+"' ;";
 				statement = conn.prepareStatement(sql2);
 				rs=statement.executeQuery(sql2);
@@ -660,7 +661,6 @@ public class BooksDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(rent.getPicture());
 		return startrentone(rent);
 	}
 	public int startrentone(Rent rent){
@@ -682,7 +682,6 @@ public class BooksDao {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			error++;
 			return 1;
 		}
 		return deletecar(rent);
@@ -711,13 +710,102 @@ public class BooksDao {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			error++;
 			return 2;
 		}
+		StartCount startCount=new StartCount();
+		startCount.startCount(rent);
 		return 4;
 	}
 	
-	public int geterror(){
-		return error;
+	public void deleteRent(Rent rent){
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		int bookid=rent.getBookid();
+		int booktype=rent.getBooktype();
+		
+		try {
+			conn=DBHelper.getConnection();
+			String sql="delete from rentbook where booktype="+booktype+" and bookid="+bookid;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public static ArrayList<Books> getSearch(String searchName){
+		
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Books> list = new ArrayList<Books>(); // 商品集合
+		
+		try {
+			conn = DBHelper.getConnection();
+			String sql = "select * from book0 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book1 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book2 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book3 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book4 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book5 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book6 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book7 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book8 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book9 where  locate('"+searchName+"',name)>0 "
+					+ "union "
+					+ "select * from book10 where  locate('"+searchName+"',name)>0 "; // SQL语句
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				Books book = new Books();
+				book.setId(rs.getInt("id"));
+				book.setName(rs.getString("name"));
+				book.setPublish(rs.getString("publish"));
+				book.setVersion(rs.getString("version"));
+				book.setPicture(rs.getString("picture"));
+				book.setWriter(rs.getString("writer"));
+				book.setRentstatus(rs.getString("rentstatus"));
+				book.setSubstatus(rs.getString("substatus"));
+				book.setPrice(rs.getString("price"));
+				book.setTime(rs.getString("time"));
+				book.setISBN(rs.getString("ISBN"));
+				book.setType(rs.getInt("type"));
+				list.add(book);// 把一个商品加入集合
+			}
+			return list; // 返回集合。
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		} finally {
+			// 释放数据集对象
+			if (rs != null) {
+				try {
+					rs.close();
+					rs = null;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			// 释放语句对象
+			if (stmt != null) {
+				try {
+					stmt.close();
+					stmt = null;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
 	}
 }
