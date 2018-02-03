@@ -86,10 +86,26 @@
   	<servlet-name>searchServ</servlet-name>
   	<servlet-class>cn.edu.uzz.servlet.SearchServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>backServ</servlet-name>
+  	<servlet-class>cn.edu.uzz.servlet.BackServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>getrentingServ</servlet-name>
+  	<servlet-class>cn.edu.uzz.servlet.GetRentingServlet</servlet-class>
+  </servlet>
   
   
   
   
+  <servlet-mapping>
+  	<servlet-name>getrentingServ</servlet-name>
+  	<url-pattern>/getrentingServ</url-pattern>
+  	</servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>backServ</servlet-name>
+  	<url-pattern>/backServ</url-pattern>
+  	</servlet-mapping>
   <servlet-mapping>
   	<servlet-name>searchServ</servlet-name>
   	<url-pattern>/searchServ</url-pattern>

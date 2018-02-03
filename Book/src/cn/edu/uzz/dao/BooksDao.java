@@ -583,6 +583,53 @@ public class BooksDao {
 					return 2;//出问题
 				}
 			}
+	public static ArrayList<Rent> getRentingBooks(String account) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Rent> list = new ArrayList<Rent>(); // 商品集合
+		try {
+			conn = DBHelper.getConnection();
+			String sql = "select * from rentbook where account='"+account+"';"; // SQL语句
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				Rent rent=new Rent();
+				rent.setAccount(account);
+				rent.setBookid(rs.getInt("bookid"));
+				rent.setBooktype(rs.getInt("booktype"));
+				rent.setBookname(rs.getString("bookname"));
+				rent.setPicture(rs.getString("picture"));
+				rent.setNowdate(rs.getString("nowdate"));
+				rent.setEnddate(rs.getString("enddate"));
+				list.add(rent);// 把一个商品加入集合
+			}
+			return list; // 返回集合。
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		} finally {
+			// 释放数据集对象
+			if (rs != null) {
+				try {
+					rs.close();
+					rs = null;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			// 释放语句对象
+			if (stmt != null) {
+				try {
+					stmt.close();
+					stmt = null;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+
+	}
 	
 	//借一本书的方法1.先检查书的 状态  2.进行增删改查
 	public int rentone(int booktype,int bookid){
@@ -658,7 +705,6 @@ public class BooksDao {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return startrentone(rent);
@@ -720,7 +766,6 @@ public class BooksDao {
 	public void deleteRent(Rent rent){
 		Connection conn = null;
 		PreparedStatement stmt = null;
-		ResultSet rs = null;
 		
 		int bookid=rent.getBookid();
 		int booktype=rent.getBooktype();
@@ -728,6 +773,8 @@ public class BooksDao {
 		try {
 			conn=DBHelper.getConnection();
 			String sql="delete from rentbook where booktype="+booktype+" and bookid="+bookid;
+			stmt=conn.prepareStatement(sql);
+			int rs=stmt.executeUpdate();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -807,5 +854,111 @@ public class BooksDao {
 				}
 			}
 		}
+	}
+	
+	public int backBook(int booktype,int bookid){
+		Rent rent=new Rent();
+		PreparedStatement stmt;
+		ResultSet rs;
+		try {
+			Connection conn=DBHelper.getConnection();
+			String sql="select * from rentbook where booktype=? and bookid=?";
+			stmt=conn.prepareStatement(sql);
+			stmt.setInt(1, booktype);
+			stmt.setInt(2, bookid);
+			rs=stmt.executeQuery();
+			if(rs.next()){
+				rent.setAccount(rs.getString("account"));
+				rent.setBookname(rs.getString("bookname"));
+				rent.setBooktype(rs.getInt("booktype"));
+				rent.setBookid(rs.getInt("bookid"));
+				rent.setEnddate(rs.getString("enddate"));
+				rent.setPicture(rs.getString("picture"));
+			}else{
+				return 1;
+				//此书没有被借阅
+			}
+			//先检查正在借阅表有无此图书，有的话取出信息插入到借阅历史表中，没有的话提示没有被借阅
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 2;
+			//Sql错误
+		}
+		return insertHistory(rent);
+	}
+	private int insertHistory(Rent rent){
+		PreparedStatement stmt;
+		try {
+			Connection conn=DBHelper.getConnection();
+			String sql="insert into renthistory (bookname,account,enddate,nowdate,booktype,bookid,picture) values(?,?,(now()),?,?,?,?)";
+			//在这里注意，nowdate指的是借书时候的时间，enddate反而指的是现在的时间
+			stmt=conn.prepareStatement(sql);
+			stmt.setString(1, rent.getBookname());
+			stmt.setString(2, rent.getAccount());
+			stmt.setString(3, rent.getNowdate());
+			stmt.setInt(4, rent.getBooktype());
+			stmt.setInt(5, rent.getBookid());
+			stmt.setString(6, rent.getPicture());
+			int rs=stmt.executeUpdate();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 2;
+			//Sql错误
+		}
+		return deleteRenting(rent);
+	}
+	private int deleteRenting(Rent rent){
+		try {
+			Connection conn=DBHelper.getConnection();
+			String sql="delete from rentbook where booktype=? and bookid=?";
+			PreparedStatement stmt=conn.prepareStatement(sql);
+			stmt.setInt(1, rent.getBooktype());
+			stmt.setInt(2, rent.getBookid());
+			int rs=stmt.executeUpdate();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 2;
+		}
+		return changeStatus(rent);
+	}
+	
+	private int changeStatus(Rent rent){
+		try {
+			Connection conn=DBHelper.getConnection();
+			CallableStatement cs=conn.prepareCall("call calrentchange(?,?)");
+			cs.setInt(1, rent.getBookid());
+			cs.setInt(2, rent.getBooktype());
+			cs.execute();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 2;
+		}
+		return 3;
+	}
+	
+	public String getEnddate(int booktype,int bookid){
+		System.out.println(booktype+"  "+bookid);
+		//String enddate;
+		try {
+			Connection conn=DBHelper.getConnection();
+			String sql="select enddate from rentbook where booktype="+booktype+" and bookid="+bookid;
+			PreparedStatement stmt=conn.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			if(rs.next()){
+				String enddate=rs.getString(1);
+				System.out.println("time is "+enddate);
+				return enddate;
+			}else{
+				return "nonono";
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
