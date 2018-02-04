@@ -10,7 +10,7 @@ public class DBHelper {
    
 	private static final String driver = "com.mysql.jdbc.Driver"; //数据库驱动
 	//连接数据库的URL地址
-	private static final String url="jdbc:mysql://localhost:3306/book?useUnicode=true&characterEncoding=UTF-8"; 
+	private static final String url="jdbc:mysql://localhost:3306/book?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull"; 
 	private static final String username="root";//数据库的用户名
 	private static final String password="997105";//数据库的密码
     

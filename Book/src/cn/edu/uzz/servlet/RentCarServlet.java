@@ -33,7 +33,7 @@ public class RentCarServlet extends HttpServlet{
 		String tString=req.getParameter("booktype");
 		int type=Integer.parseInt(tString);
 		String bookname=req.getParameter("bookname");
-		String timeend=req.getParameter("timeend");
+		String timeend=req.getParameter("timeend")+" 23:59:59";
 		String picture=req.getParameter("picture");
 		//String timeend="2017-12-3";
 		

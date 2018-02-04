@@ -17,7 +17,7 @@ public class StartCount {
 	public void startCount(Rent rent){
 		String endDate=rent.getEnddate();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String dateString = endDate+" 6:00:00";
+		String dateString = endDate;
 		System.out.println(dateString);
 		Calendar calendar = Calendar.getInstance();
 		long nowDate = calendar.getTime().getTime();//Date.getTime() 获得毫秒型日期
