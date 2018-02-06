@@ -34,8 +34,8 @@ public class StartCount {
 			@Override
 			public void run() {
 				BooksDao booksDao=new BooksDao();
-				booksDao.deleteRent(rent);
-				
+				//booksDao.deleteRent(rent);
+				booksDao.countDown(rent);
 			}
 		}, betweenDate);
 	}

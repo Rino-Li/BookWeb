@@ -63,7 +63,7 @@ public class BackServlet extends HttpServlet{
 			System.out.println(""+day+"天"+hour+"小时"+min+"分"+s+"秒");   
 			data.put("resultCode", result);
 			data.put("describe", "还书结果");
-			data.put("time",""+day+"天"+hour+"小时"+min+"分"+s+"秒");
+			data.put("time",""+day+"天"+hour+"小时"+min+"分");
 			resp.getWriter().write(data.toString());
 		}else{
 			data.put("resultCode", result);

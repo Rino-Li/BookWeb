@@ -631,6 +631,102 @@ public class BooksDao {
 
 	}
 	
+	public static ArrayList<Rent> getHistoryBooks(String account) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Rent> list = new ArrayList<Rent>(); // 商品集合
+		try {
+			conn = DBHelper.getConnection();
+			String sql = "select * from renthistory where account='"+account+"';"; // SQL语句
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				Rent rent=new Rent();
+				rent.setAccount(account);
+				rent.setBookid(rs.getInt("bookid"));
+				rent.setBooktype(rs.getInt("booktype"));
+				rent.setBookname(rs.getString("bookname"));
+				rent.setPicture(rs.getString("picture"));
+				rent.setNowdate(rs.getString("nowdate"));
+				rent.setEnddate(rs.getString("enddate"));
+				list.add(rent);// 把一个商品加入集合
+			}
+			return list; // 返回集合。
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		} finally {
+			// 释放数据集对象
+			if (rs != null) {
+				try {
+					rs.close();
+					rs = null;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			// 释放语句对象
+			if (stmt != null) {
+				try {
+					stmt.close();
+					stmt = null;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+
+	}
+	
+	public static ArrayList<Rent> getExceedBooks(String account) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ArrayList<Rent> list = new ArrayList<Rent>(); // 商品集合
+		try {
+			conn = DBHelper.getConnection();
+			String sql = "select * from rentbook_exceed where account='"+account+"';"; // SQL语句
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				Rent rent=new Rent();
+				rent.setAccount(account);
+				rent.setBookid(rs.getInt("bookid"));
+				rent.setBooktype(rs.getInt("booktype"));
+				rent.setBookname(rs.getString("bookname"));
+				rent.setPicture(rs.getString("picture"));
+				rent.setNowdate(rs.getString("nowdate"));
+				rent.setEnddate(rs.getString("enddate"));
+				list.add(rent);// 把一个商品加入集合
+			}
+			return list; // 返回集合。
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		} finally {
+			// 释放数据集对象
+			if (rs != null) {
+				try {
+					rs.close();
+					rs = null;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			// 释放语句对象
+			if (stmt != null) {
+				try {
+					stmt.close();
+					stmt = null;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+
+	}
+	
 	//借一本书的方法1.先检查书的 状态  2.进行增删改查
 	public int rentone(int booktype,int bookid){
 		String tablename = null;
@@ -763,7 +859,32 @@ public class BooksDao {
 		return 4;
 	}
 	
-	public void deleteRent(Rent rent){
+	public void countDown(Rent rent){
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		int bookid=rent.getBookid();
+		int booktype=rent.getBooktype();
+		
+		try {
+			conn=DBHelper.getConnection();
+			String sql="insert into rentbook_exceed (bookname,account,enddate,nowdate,booktype,bookid,picture) values(?,?,?,?,?,?,?)";
+			stmt=conn.prepareStatement(sql);
+			stmt.setString(1, rent.getBookname());
+			stmt.setString(2, rent.getAccount());
+			stmt.setString(3, rent.getEnddate());
+			stmt.setString(4, rent.getNowdate());
+			stmt.setInt(5, rent.getBooktype());
+			stmt.setInt(6, rent.getBookid());
+			stmt.setString(7, rent.getPicture());
+			int rs=stmt.executeUpdate();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/*public void deleteRent(Rent rent){
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		
@@ -779,7 +900,7 @@ public class BooksDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	
 	public static ArrayList<Books> getSearch(String searchName){
@@ -872,6 +993,7 @@ public class BooksDao {
 				rent.setBookname(rs.getString("bookname"));
 				rent.setBooktype(rs.getInt("booktype"));
 				rent.setBookid(rs.getInt("bookid"));
+				rent.setNowdate(rs.getString("nowdate"));
 				rent.setEnddate(rs.getString("enddate"));
 				rent.setPicture(rs.getString("picture"));
 			}else{
@@ -941,7 +1063,6 @@ public class BooksDao {
 	}
 	
 	public String getEnddate(int booktype,int bookid){
-		System.out.println(booktype+"  "+bookid);
 		//String enddate;
 		try {
 			Connection conn=DBHelper.getConnection();
@@ -950,7 +1071,6 @@ public class BooksDao {
 			ResultSet rs = stmt.executeQuery(sql);
 			if(rs.next()){
 				String enddate=rs.getString(1);
-				System.out.println("time is "+enddate);
 				return enddate;
 			}else{
 				return "nonono";

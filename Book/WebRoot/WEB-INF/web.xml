@@ -94,10 +94,18 @@
   	<servlet-name>getrentingServ</servlet-name>
   	<servlet-class>cn.edu.uzz.servlet.GetRentingServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>gethistoryServ</servlet-name>
+  	<servlet-class>cn.edu.uzz.servlet.GetHistoryServlet</servlet-class>
+  </servlet>
   
   
   
   
+  <servlet-mapping>
+  	<servlet-name>gethistoryServ</servlet-name>
+  	<url-pattern>/gethistoryServ</url-pattern>
+  	</servlet-mapping>
   <servlet-mapping>
   	<servlet-name>getrentingServ</servlet-name>
   	<url-pattern>/getrentingServ</url-pattern>
