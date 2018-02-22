@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.edu.uzz.util.DBHelper;
+import cn.edu.uzz.util.Push;
 import net.sf.json.JSONObject;
 
 public class RentCarServlet extends HttpServlet{
@@ -104,6 +105,7 @@ public class RentCarServlet extends HttpServlet{
 					Statement statement;
 				    statement = conn.createStatement();
 				    statement.executeUpdate("DELETE from rentcar where account='" + account + "' and bookname='" + bookname + "' and booktype='"+type+"' and bookid='"+id+"'");
+				    Push.push(account, "借阅车书本已到期");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

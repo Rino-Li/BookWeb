@@ -14,6 +14,7 @@ import cn.edu.uzz.entity.Like;
 import cn.edu.uzz.entity.Rent;
 import cn.edu.uzz.entity.Subscribe;
 import cn.edu.uzz.util.DBHelper;
+import cn.edu.uzz.util.Push;
 
 public class BooksDao {
 	
@@ -856,6 +857,7 @@ public class BooksDao {
 		}
 		StartCount startCount=new StartCount();
 		startCount.startCount(rent);
+		Push.push(rent.getAccount(), "借阅成功");
 		return 4;
 	}
 	
@@ -1059,6 +1061,7 @@ public class BooksDao {
 			e.printStackTrace();
 			return 2;
 		}
+		Push.push(rent.getAccount(), "还书成功！欢迎下次光临");
 		return 3;
 	}
 	

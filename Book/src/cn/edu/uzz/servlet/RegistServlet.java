@@ -2,6 +2,7 @@ package cn.edu.uzz.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,13 +28,19 @@ public class RegistServlet extends HttpServlet{
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("application/json;charset=utf-8");
 		
-		try {
-		String usrAccount=req.getParameter("account");
-		String usrName=req.getParameter("username");
-		String usrPwd=req.getParameter("password");
-		JSONObject data = new JSONObject();
-		String sql="select * FROM user a WHERE a.account = '"+usrAccount+"'";
+		String account=req.getParameter("account");
+		String username=req.getParameter("username");
+		String sex=req.getParameter("sex");
+		String tel=req.getParameter("tel");
+		String address=req.getParameter("address");
+		int age=Integer.parseInt(req.getParameter("age"));
+		String password=req.getParameter("password");
+		String truthname=req.getParameter("truthname");
 		
+		try {
+		JSONObject data = new JSONObject();
+		String sql="select * FROM user a WHERE a.account = '"+account+"'";
+		String sql2="insert into user (account,username,password,phone,addr,rdate,usersex,userage,name) values(?,?,?,?,?,(now()),?,?,?)";
 		Connection conn=DBHelper.getConnection();
 		Statement statement;
 	    statement = conn.createStatement();
@@ -47,8 +54,17 @@ public class RegistServlet extends HttpServlet{
 			resp.getWriter().write(data.toString());
 			return;
 		}else{//ÓÃ»§Î´×¢²á
-				statement.executeUpdate("insert into user (username,password,rdate,account) values ('"+usrName
-						+"','"+usrPwd+"',(now()),'"+usrAccount+"')");
+			PreparedStatement stmt;
+			stmt=conn.prepareStatement(sql2);
+			stmt.setString(1, account);
+			stmt.setString(2, username);
+			stmt.setString(3, password);
+			stmt.setString(4, tel);
+			stmt.setString(5, address);
+			stmt.setString(6, sex);
+			stmt.setInt(7, age);
+			stmt.setString(8, truthname);
+			int rs2=stmt.executeUpdate();
 		}
 		
 		data.put("resultCode", 1);

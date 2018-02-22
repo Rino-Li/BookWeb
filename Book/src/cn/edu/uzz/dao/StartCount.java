@@ -37,8 +37,7 @@ public class StartCount {
 				BooksDao booksDao=new BooksDao();
 				//booksDao.deleteRent(rent);
 				booksDao.countDown(rent);
-				Push push=new Push();
-				push.push("17863203270", "您的借阅已到期");
+				Push.push(rent.getAccount(), "您的借阅已到期");
 			}
 		}, betweenDate);
 	}

@@ -98,10 +98,18 @@
   	<servlet-name>gethistoryServ</servlet-name>
   	<servlet-class>cn.edu.uzz.servlet.GetHistoryServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>findtelServ</servlet-name>
+  	<servlet-class>cn.edu.uzz.servlet.FindAccountServlet</servlet-class>
+  </servlet>
   
   
   
   
+  <servlet-mapping>
+  	<servlet-name>findtelServ</servlet-name>
+  	<url-pattern>/findtelServ</url-pattern>
+  	</servlet-mapping>
   <servlet-mapping>
   	<servlet-name>gethistoryServ</servlet-name>
   	<url-pattern>/gethistoryServ</url-pattern>

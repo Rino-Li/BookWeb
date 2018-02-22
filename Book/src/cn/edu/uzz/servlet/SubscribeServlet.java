@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 
 import cn.edu.uzz.entity.User;
 import cn.edu.uzz.util.DBHelper;
+import cn.edu.uzz.util.Push;
 import net.sf.json.JSONObject;
 
 public class SubscribeServlet extends HttpServlet{
@@ -107,14 +108,12 @@ public class SubscribeServlet extends HttpServlet{
 						cs.setInt(1, bookid);
 						cs.setInt(2, booktype);
 						cs.execute();
-						
+						Push.push(username, "您的预定已到期");
 						
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
-				
 				}
 			},1000*60*24*60);
 		}
